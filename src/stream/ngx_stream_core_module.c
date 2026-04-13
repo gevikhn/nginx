@@ -1227,6 +1227,12 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 #endif
         }
 
+        if (ngx_strcmp(value[i].data, "pqctls") == 0) {
+            lsopt.pqctls = 1;
+            cscf->pqctls = 1;
+            continue;
+        }
+
         if (ngx_strncmp(value[i].data, "so_keepalive=", 13) == 0) {
 
             if (ngx_strcmp(&value[i].data[13], "on") == 0) {
@@ -1363,6 +1369,10 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         }
 #endif
 
+        if (lsopt.pqctls) {
+            return "\"pqctls\" parameter is incompatible with \"udp\"";
+        }
+
         if (lsopt.so_keepalive) {
             return "\"so_keepalive\" parameter is incompatible with \"udp\"";
         }
@@ -1370,6 +1380,10 @@ ngx_stream_core_listen(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
         if (lsopt.proxy_protocol) {
             return "\"proxy_protocol\" parameter is incompatible with \"udp\"";
         }
+    }
+
+    if (lsopt.pqctls && lsopt.ssl) {
+        return "\"ssl\" parameter is incompatible with \"pqctls\"";
     }
 
     for (n = 0; n < u.naddrs; n++) {

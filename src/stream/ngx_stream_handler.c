@@ -132,6 +132,9 @@ ngx_stream_init_connection(ngx_connection_t *c)
 #if (NGX_STREAM_SSL)
     s->ssl = addr_conf->ssl;
 #endif
+#if (NGX_STREAM_PQCTLS)
+    s->pqctls = addr_conf->pqctls;
+#endif
 
     if (c->buffer) {
         s->received += c->buffer->last - c->buffer->pos;
