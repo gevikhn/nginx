@@ -8,6 +8,9 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
+#if (NGX_HTTP_PQCTLS)
+#include <ngx_http_pqctls_module.h>
+#endif
 
 
 static void ngx_http_wait_request_handler(ngx_event_t *ev);
@@ -330,6 +333,15 @@ ngx_http_init_connection(ngx_connection_t *c)
     }
 #endif
 
+#if (NGX_HTTP_PQCTLS)
+    if (hc->addr_conf->pqctls) {
+        hc->pqctls = 1;
+        c->log->action = "PQCTLS handshaking";
+        rev->handler = ngx_http_pqctls_handshake;
+        c->write->handler = ngx_http_pqctls_handshake;
+    }
+#endif
+
 #if (NGX_HTTP_SSL)
     if (hc->addr_conf->ssl) {
         hc->ssl = 1;
@@ -364,6 +376,16 @@ ngx_http_init_connection(ngx_connection_t *c)
         ngx_http_close_connection(c);
         return;
     }
+}
+
+
+void
+ngx_http_start_request(ngx_connection_t *c)
+{
+    c->read->handler = ngx_http_wait_request_handler;
+    c->write->handler = ngx_http_empty_handler;
+
+    ngx_http_wait_request_handler(c->read);
 }
 
 
@@ -855,13 +877,8 @@ ngx_http_ssl_handshake_handler(ngx_connection_t *c)
 #endif
 
         c->log->action = "waiting for request";
-
-        c->read->handler = ngx_http_wait_request_handler;
-        /* STUB: epoll edge */ c->write->handler = ngx_http_empty_handler;
-
         ngx_reusable_connection(c, 1);
-
-        ngx_http_wait_request_handler(c->read);
+        ngx_http_start_request(c);
 
         return;
     }
