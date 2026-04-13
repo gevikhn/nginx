@@ -279,12 +279,34 @@ ngx_proxy_protocol_read_port(u_char *p, u_char *last, in_port_t *port,
 u_char *
 ngx_proxy_protocol_write(ngx_connection_t *c, u_char *buf, u_char *last)
 {
-    ngx_uint_t  port, lport;
+    ngx_uint_t             port, lport;
+    ngx_proxy_protocol_t  *pp;
 
     if (last - buf < NGX_PROXY_PROTOCOL_V1_MAX_HEADER) {
         ngx_log_error(NGX_LOG_ALERT, c->log, 0,
                       "too small buffer for PROXY protocol");
         return NULL;
+    }
+
+    pp = c->proxy_protocol;
+
+    if (pp != NULL) {
+        if (ngx_strlchr(pp->src_addr.data,
+                        pp->src_addr.data + pp->src_addr.len, ':')
+            != NULL)
+        {
+            buf = ngx_cpymem(buf, "PROXY TCP6 ", sizeof("PROXY TCP6 ") - 1);
+
+        } else {
+            buf = ngx_cpymem(buf, "PROXY TCP4 ", sizeof("PROXY TCP4 ") - 1);
+        }
+
+        buf = ngx_cpymem(buf, pp->src_addr.data, pp->src_addr.len);
+        *buf++ = ' ';
+        buf = ngx_cpymem(buf, pp->dst_addr.data, pp->dst_addr.len);
+
+        return ngx_slprintf(buf, last, " %ui %ui" CRLF,
+                            pp->src_port, pp->dst_port);
     }
 
     if (ngx_connection_local_sockaddr(c, NULL, 0) != NGX_OK) {
