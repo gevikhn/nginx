@@ -337,6 +337,7 @@ typedef struct {
     ngx_msec_t                        keepalive_timeout;
 
     unsigned                          ssl:1;
+    unsigned                          pqctls:1;
     unsigned                          proxy_protocol:1;
 } ngx_http_connection_t;
 

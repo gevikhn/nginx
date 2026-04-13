@@ -89,6 +89,7 @@ ngx_int_t ngx_http_add_listen(ngx_conf_t *cf, ngx_http_core_srv_conf_t *cscf,
 
 
 void ngx_http_init_connection(ngx_connection_t *c);
+void ngx_http_start_request(ngx_connection_t *c);
 void ngx_http_close_connection(ngx_connection_t *c);
 
 #if (NGX_HTTP_SSL && defined SSL_CTRL_SET_TLSEXT_HOSTNAME)
