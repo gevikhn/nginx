@@ -50,6 +50,7 @@ typedef struct {
     unsigned                       bind:1;
     unsigned                       wildcard:1;
     unsigned                       ssl:1;
+    unsigned                       pqctls:1;
 #if (NGX_HAVE_INET6)
     unsigned                       ipv6only:1;
 #endif
@@ -167,6 +168,7 @@ typedef struct {
     ngx_msec_t                     proxy_protocol_timeout;
 
     unsigned                       listen:1;
+    unsigned                       pqctls:1;
 #if (NGX_PCRE)
     unsigned                       captures:1;
 #endif
@@ -200,6 +202,7 @@ typedef struct {
     ngx_stream_virtual_names_t    *virtual_names;
 
     unsigned                       ssl:1;
+    unsigned                       pqctls:1;
     unsigned                       proxy_protocol:1;
 } ngx_stream_addr_conf_t;
 
@@ -290,6 +293,7 @@ struct ngx_stream_session_s {
     ngx_uint_t                     status;
 
     unsigned                       ssl:1;
+    unsigned                       pqctls:1;
 
     unsigned                       stat_processing:1;
 
