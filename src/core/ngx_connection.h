@@ -159,6 +159,8 @@ struct ngx_connection_s {
 #if (NGX_SSL || NGX_COMPAT)
     ngx_ssl_connection_t  *ssl;
 #endif
+    void                  *pqctls;
+    ngx_pool_cleanup_t    *pqctls_cleanup;
 
     ngx_udp_connection_t  *udp;
 
