@@ -664,6 +664,12 @@ ngx_http_alloc_request(ngx_connection_t *c)
     }
 #endif
 
+#if (NGX_HTTP_PQCTLS)
+    if (c->pqctls) {
+        r->main_filter_need_in_memory = 1;
+    }
+#endif
+
     r->main = r;
     r->count = 1;
 
