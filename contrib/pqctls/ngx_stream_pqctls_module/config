@@ -1,0 +1,33 @@
+ngx_addon_name=ngx_stream_pqctls_module
+
+if test -n "$PQCTLS_CAPI_INCLUDE"; then
+    pqctls_capi_inc="$PQCTLS_CAPI_INCLUDE"
+elif test -n "$PQCTLS_ROOT"; then
+    pqctls_capi_inc="$PQCTLS_ROOT/capi"
+else
+    echo "$0: error: set PQCTLS_CAPI_INCLUDE or PQCTLS_ROOT to locate pqctls_capi.h" >&2
+    exit 1
+fi
+
+if test ! -f "$pqctls_capi_inc/pqctls_capi.h"; then
+    echo "$0: error: pqctls_capi.h not found in $pqctls_capi_inc" >&2
+    exit 1
+fi
+
+have=NGX_STREAM_PQCTLS . auto/have
+
+if test -n "$ngx_module_link"; then
+    ngx_module_type=STREAM
+    ngx_module_name=ngx_stream_pqctls_module
+    ngx_module_srcs="$ngx_addon_dir/ngx_stream_pqctls_module.c"
+    ngx_module_incs="$ngx_addon_dir $pqctls_capi_inc"
+    ngx_module_deps="$ngx_addon_dir/ngx_stream_pqctls_module.h \
+                     $pqctls_capi_inc/pqctls_capi.h"
+    . auto/module
+else
+    STREAM_MODULES="$STREAM_MODULES ngx_stream_pqctls_module"
+    NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_stream_pqctls_module.c"
+    STREAM_INCS="$STREAM_INCS $ngx_addon_dir $pqctls_capi_inc"
+    NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_addon_dir/ngx_stream_pqctls_module.h \
+                                   $pqctls_capi_inc/pqctls_capi.h"
+fi
