@@ -6,7 +6,7 @@ stack on top of upstream NGINX release branches.
 Maintenance model:
 
 - Branch naming: `pqctls/release-<nginx-version>`
-- Current maintained branch: `pqctls/release-1.29.8`
+- Current maintained branch: `pqctls/release-1.31`
 - Commit layering:
   - `core`: shared connection and proxy-protocol hooks
   - `http`: HTTP listener and request-path plumbing
